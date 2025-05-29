@@ -24,6 +24,6 @@
     }
   ],
   "env": {
-    "FOOTBALL_DATA_API_KEY": "@football_data_api_key"
+    "FOOTBALL_DATA_API_KEY": "2007b58a2aec458a989bb1b640fd4341"
   }
 }

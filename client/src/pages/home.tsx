@@ -54,7 +54,7 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Upcoming Matches</h1>
-                <p className="text-sm text-gray-600">Premier League 2024/25</p>
+                <p className="text-sm text-gray-600">European Football Competitions</p>
               </div>
             </div>
             <Button

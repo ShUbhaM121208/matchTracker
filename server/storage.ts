@@ -42,21 +42,39 @@ export class MemStorage implements IStorage {
     }
 
     try {
-      const response = await fetch(
-        `https://api.football-data.org/v4/competitions/${competitionCode}/matches?status=SCHEDULED`,
-        {
-          headers: {
-            'X-Auth-Token': apiKey,
-          },
-        }
-      );
+      // Try multiple competitions to find upcoming matches
+      const competitions = ['PL', 'CL', 'FL1', 'BL1', 'SA', 'PD', 'EC'];
+      let allMatches: any[] = [];
 
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      for (const comp of competitions) {
+        try {
+          const response = await fetch(
+            `https://api.football-data.org/v4/competitions/${comp}/matches?status=SCHEDULED`,
+            {
+              headers: {
+                'X-Auth-Token': apiKey,
+              },
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.matches && data.matches.length > 0) {
+              allMatches = allMatches.concat(data.matches);
+              // Limit to first 20 matches to avoid overwhelming the UI
+              if (allMatches.length >= 20) break;
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch matches for ${comp}:`, error);
+          continue;
+        }
       }
 
-      const data = await response.json();
-      return data.matches || [];
+      // Sort matches by date
+      allMatches.sort((a, b) => new Date(a.utcDate).getTime() - new Date(b.utcDate).getTime());
+      
+      return allMatches.slice(0, 20); // Return max 20 matches
     } catch (error) {
       console.error('Error fetching matches:', error);
       throw error;
